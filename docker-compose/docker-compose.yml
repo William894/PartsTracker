@@ -1,0 +1,44 @@
+version: '3.9'
+
+name: partstracker
+
+services:
+  partstracker.mongo:
+    image: mongo
+    container_name: PartsTracker.MongoDB
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 1qazXSW@
+    ports:
+      - 27017:27017
+    volumes:
+      - ../.containers/mongodb/data:/data/db
+
+  partstracker.mongo-express:
+    image: mongo-express
+    container_name: PartsTracker.MongoExpress
+    restart: always
+    ports:
+      - 5081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 1qazXSW@
+      ME_CONFIG_MONGODB_URL: mongodb://root:1qazXSW%40@partstracker.mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+
+  partstracker.seq:
+    image: datalust/seq:latest
+    container_name: PartsTracker.Seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 5341:5341
+      - 8081:80
+
+  partstracker.redis:
+    image: redis:latest
+    container_name: PartsTracker.Redis
+    restart: always
+    ports:
+      - 6379:6379
