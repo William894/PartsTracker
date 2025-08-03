@@ -8,6 +8,7 @@ import router from './routes/router';
 import HttpException from './exceptions/HttpException';
 import { getLogger } from './utils/logger';
 import cors from 'cors';
+import partModel from './models/parts/part.schema';
 
 class App {
     public app: express.Application;
@@ -129,7 +130,7 @@ class App {
             }
         });
     }
-
+    
     private connectToTheDatabase() {
         const {
         MONGO_USER,
@@ -146,6 +147,57 @@ class App {
             if (this.logger) {
                 this.logger.debug('Connected to MongoDB');
             }
+
+            const seedParts = [
+                {
+                    partNumber: 'PRT-000001',
+                    description: 'Brake Pad - High performance ceramic brake pad',
+                    quantityOnHand: 50,
+                    locationCode: 'LOC-001'
+                },
+                {
+                    partNumber: 'PRT-000002',
+                    description: 'Oil Filter - Synthetic oil filter for extended engine life',
+                    quantityOnHand: 45,
+                    locationCode: 'LOC-001'
+                },
+                {
+                    partNumber: 'PRT-000003',
+                    description: 'Spark Plug - Iridium spark plug for improved ignition',
+                    quantityOnHand: 40,
+                    locationCode: 'LOC-001'
+                },
+                {
+                    partNumber: 'PRT-000004',
+                    description: 'Brake Rotor - High performance brake rotor',
+                    quantityOnHand: 35,
+                    locationCode: 'LOC-001'
+                },
+            ];
+
+            seedParts.forEach(async (part) => {
+                let existingPart = await partModel.findById(part.partNumber)
+                    .then(part => {
+                        if (part) {
+                            return part;
+                        } else {
+                            return null;
+                        }
+                    });
+
+                if (!existingPart) {
+                    existingPart = new partModel({
+                        _id: part.partNumber,
+                        description: part.description,
+                        quantityOnHand: part.quantityOnHand,
+                        locationCode: part.locationCode,
+                        lastStockCheckDate: null,
+                        isDeleted: false
+                    });
+                    await existingPart.save();
+                }
+            });
+
         }).catch(error => {
             if (this.logger) {
                 this.logger.error('MongoDB connection error:', error);
