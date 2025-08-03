@@ -69,3 +69,18 @@ services:
       - partstracker.mongo
       - partstracker.redis
       - partstracker.seq
+
+  partstracker.web:
+    image: ${DOCKER_REGISTRY-}partstrackerweb
+    container_name: PartsTracker.Web
+    build:
+      context: ../client
+      dockerfile: ./Dockerfile
+    ports:
+      - 5001:5001
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_API_URL=http://localhost:5000/api
+      - PORT=5001
+    depends_on:
+      - partstracker.api
