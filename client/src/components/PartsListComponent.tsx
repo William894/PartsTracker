@@ -45,7 +45,7 @@ export function GetPartsList({ refreshRef }: { refreshRef?: React.MutableRefObje
 
     return (
         <>
-            {parts.map(part => (
+            {parts.sort((a, b) => a.partNumber.localeCompare(b.partNumber)).map(part => (
                 <tr key={part.partNumber}>
                     <td>{part.partNumber}</td>
                     <td>{part.description}</td>
